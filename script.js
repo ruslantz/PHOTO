@@ -8,48 +8,25 @@ const children = [
 let currentPhotos = [];
 let currentIndex = 0;
 let selectedChild = '';
-let originalImageSize = 0;
-let optimizedImageSize = 0;
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
-    showStatus('Выберите фото для оптимизации и сохранения', 'info');
+    showStatus('Выберите фото для начала работы', 'info');
 });
 
 function setupEventListeners() {
-    // Настройка слайдеров
-    const qualitySlider = document.getElementById('qualitySlider');
-    const qualityValue = document.getElementById('qualityValue');
-    qualitySlider.addEventListener('input', function() {
-        qualityValue.textContent = this.value + '%';
-        if (currentPhotos.length > 0) {
-            updatePreview();
-        }
-    });
-
-    const sizeSlider = document.getElementById('sizeSlider');
-    const sizeValue = document.getElementById('sizeValue');
-    sizeSlider.addEventListener('input', function() {
-        sizeValue.textContent = this.value + '%';
-        if (currentPhotos.length > 0) {
-            updatePreview();
-        }
-    });
-
-    // Выбор формата
-    document.getElementById('formatSelect').addEventListener('change', function() {
-        if (currentPhotos.length > 0) {
-            updatePreview();
-        }
-    });
-
     // Выбор ребенка
     document.querySelectorAll('.child-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             selectedChild = this.getAttribute('data-id');
             document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            
+            // Автоматически сохраняем при выборе ребенка
+            if (currentPhotos.length > 0) {
+                savePhoto();
+            }
         });
     });
 
@@ -81,7 +58,6 @@ function showCurrentPhoto() {
     }
 
     const file = currentPhotos[currentIndex];
-    originalImageSize = file.size;
     updateFileInfo(file);
     
     const reader = new FileReader();
@@ -91,154 +67,52 @@ function showCurrentPhoto() {
         document.querySelectorAll('.child-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        
-        // Обновляем предпросмотр с настройками по умолчанию
-        setTimeout(updatePreview, 100);
+        showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
     };
     
     reader.readAsDataURL(file);
 }
 
-function updatePreview() {
-    if (currentIndex >= currentPhotos.length) return;
-
+function savePhoto() {
+    const lessonNumber = document.getElementById('lessonNumber').value;
     const file = currentPhotos[currentIndex];
-    const quality = parseInt(document.getElementById('qualitySlider').value);
-    const scale = parseInt(document.getElementById('sizeSlider').value) / 100;
-    const format = document.getElementById('formatSelect').value;
-
-    const img = new Image();
-    img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Вычисляем новые размеры
-        const newWidth = Math.round(img.width * scale);
-        const newHeight = Math.round(img.height * scale);
-        
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        
-        // Рисуем изображение с новыми размерами
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-        
-        // Конвертируем в выбранный формат
-        let mimeType = 'image/jpeg';
-        if (format === 'webp') mimeType = 'image/webp';
-        else if (format === 'png') mimeType = 'image/png';
-        
-        canvas.toBlob(function(blob) {
-            optimizedImageSize = blob.size;
-            updateComparison();
-            document.getElementById('photoPreview').src = URL.createObjectURL(blob);
-        }, mimeType, quality / 100);
-    };
+    const child = children.find(c => c.id === selectedChild);
     
-    img.src = URL.createObjectURL(file);
+    if (!child) {
+        showStatus('Ошибка: ребенок не найден', 'error');
+        return;
+    }
+
+    // Создаем имя файла
+    const extension = file.name.split('.').pop();
+    const fileName = `${child.name}_занятие${lessonNumber}.${extension}`;
+    
+    // Скачиваем файл
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showStatus(`✅ Сохранено: ${fileName}`, 'success');
+    
+    // Переходим к следующему фото
+    currentIndex++;
+    updateProgress();
+    setTimeout(showCurrentPhoto, 1000);
 }
 
 function updateFileInfo(file) {
     const fileInfo = document.getElementById('fileInfo');
-    const size = formatFileSize(file.size);
+    const size = (file.size / 1024).toFixed(1);
     fileInfo.innerHTML = `
         <strong>Фото ${currentIndex + 1} из ${currentPhotos.length}</strong><br>
         Имя: ${file.name}<br>
-        Размер: ${size}<br>
-        Тип: ${file.type || 'image'}
+        Размер: ${size} KB
     `;
-}
-
-function updateComparison() {
-    document.getElementById('originalSize').textContent = formatFileSize(originalImageSize);
-    document.getElementById('newSize').textContent = formatFileSize(optimizedImageSize);
-    
-    const savings = originalImageSize - optimizedImageSize;
-    const percent = (savings / originalImageSize * 100).toFixed(1);
-    
-    if (savings > 0) {
-        document.getElementById('savings').textContent = 
-            `Экономия: ${formatFileSize(savings)} (${percent}%)`;
-    } else {
-        document.getElementById('savings').textContent = '';
-    }
-}
-
-function formatFileSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    else return (bytes / 1048576).toFixed(1) + ' MB';
-}
-
-function processAndDownload() {
-    if (!selectedChild) {
-        showStatus('Сначала выберите ребенка!', 'error');
-        return;
-    }
-
-    const file = currentPhotos[currentIndex];
-    const lessonNumber = document.getElementById('lessonNumber').value;
-    const quality = parseInt(document.getElementById('qualitySlider').value);
-    const scale = parseInt(document.getElementById('sizeSlider').value) / 100;
-    const format = document.getElementById('formatSelect').value;
-    const child = children.find(c => c.id === selectedChild);
-    
-    const img = new Image();
-    img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Вычисляем новые размеры
-        const newWidth = Math.round(img.width * scale);
-        const newHeight = Math.round(img.height * scale);
-        
-        canvas.width = newWidth;
-        canvas.height = newHeight + 60; // Место для текста
-        
-        // Заливаем белым фон
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Рисуем оригинальное изображение
-        ctx.drawImage(img, 0, 60, newWidth, newHeight);
-        
-        // Добавляем текст с информацией
-        ctx.fillStyle = '#2c3e50';
-        ctx.font = '20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${child.name} - Занятие ${lessonNumber}`, canvas.width/2, 30);
-        
-        // Конвертируем в выбранный формат
-        let mimeType = 'image/jpeg';
-        let extension = 'jpg';
-        
-        if (format === 'webp') {
-            mimeType = 'image/webp';
-            extension = 'webp';
-        } else if (format === 'png') {
-            mimeType = 'image/png';
-            extension = 'png';
-        }
-        
-        canvas.toBlob(function(blob) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${child.name}_занятие_${lessonNumber}.${extension}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showStatus('✅ Фото оптимизировано и скачано!', 'success');
-            
-            // Переходим к следующему фото
-            currentIndex++;
-            updateProgress();
-            setTimeout(showCurrentPhoto, 1500);
-        }, mimeType, quality / 100);
-    };
-    
-    img.src = URL.createObjectURL(file);
 }
 
 function skipPhoto() {
