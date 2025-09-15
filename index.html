@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оптимизатор фото занятий</title>
+    <title>Разметка фото занятий</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>📷 Оптимизатор фото занятий</h1>
+        <h1>📷 Разметка фото занятий</h1>
         
         <div class="upload-section">
             <input type="file" id="photoInput" class="file-input" accept="image/*" multiple>
             <button onclick="document.getElementById('photoInput').click()" class="upload-btn">
-                📸 Выбрать фото для оптимизации
+                📸 Выбрать фото
             </button>
-            <p style="margin-top: 15px; color: #7f8c8d; font-size: 14px;">
-                Поддерживаются JPG, PNG и WebP форматы
-            </p>
         </div>
         
         <div id="taggerSection" class="tagger-section">
@@ -29,49 +26,10 @@
             
             <img id="photoPreview" class="photo-preview">
             
-            <div class="settings-panel">
-                <div class="settings-title">
-                    <span>⚙️ Настройки оптимизации</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="formatSelect">Формат изображения:</label>
-                    <select id="formatSelect">
-                        <option value="webp">WebP (рекомендуется)</option>
-                        <option value="jpeg">JPEG</option>
-                        <option value="png">PNG</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="qualitySlider">Качество изображения:</label>
-                    <div class="slider-container">
-                        <input type="range" min="30" max="100" value="75" class="slider" id="qualitySlider">
-                        <span class="slider-value" id="qualityValue">75%</span>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="sizeSlider">Размер изображения (% от оригинала):</label>
-                    <div class="slider-container">
-                        <input type="range" min="30" max="100" value="70" class="slider" id="sizeSlider">
-                        <span class="slider-value" id="sizeValue">70%</span>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="lessonNumber">Номер занятия:</label>
+                <input type="number" id="lessonNumber" min="1" value="1">
             </div>
-            
-            <div class="comparison-container">
-                <div class="comparison-box">
-                    <div class="comparison-title">Исходный размер</div>
-                    <div id="originalSize" class="file-size">—</div>
-                </div>
-                <div class="comparison-box">
-                    <div class="comparison-title">Новый размер</div>
-                    <div id="newSize" class="file-size">—</div>
-                </div>
-            </div>
-            
-            <div id="savings" class="savings"></div>
             
             <div class="children-section">
                 <h3>Выберите ребенка:</h3>
@@ -82,18 +40,8 @@
                 </div>
             </div>
             
-            <div class="form-group">
-                <label for="lessonNumber">Номер занятия:</label>
-                <input type="number" id="lessonNumber" min="1" value="1">
-            </div>
-            
             <div class="action-buttons">
-                <button onclick="skipPhoto()" class="action-btn skip-btn">
-                    <span>⏭️</span> Пропустить фото
-                </button>
-                <button onclick="processAndDownload()" class="action-btn download-btn">
-                    <span>💾</span> Скачать оптимизированное фото
-                </button>
+                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
             </div>
             
             <div id="status" class="status info"></div>
