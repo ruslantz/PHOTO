@@ -22,21 +22,28 @@
                 <div class="progress" id="progressBar"></div>
             </div>
             
-            <img id="photoPreview" class="photo-preview">
-            
-            <div class="form-group">
-                <label for="lessonNumber">Номер занятия:</label>
-                <input type="number" id="lessonNumber" min="1" value="1">
-            </div>
-            
-            <div class="children-section">
-                <h3>Выберите ребенка:</h3>
-                <div class="child-buttons" id="childButtons">
-                    <button class="child-btn" data-id="YAKOV2020">Яков Ситдиков</button>
-                    <button class="child-btn" data-id="ARINA2020">Арина Родионовна</button>
-                    <button class="child-btn" data-id="VASYA2020">Вася Пупкин</button>
+            <!-- НОВАЯ СТРУКТУРА С ДВУМЯ КОЛОНКАМИ -->
+            <div class="photo-container">
+                <div class="photo-column">
+                    <img id="photoPreview" class="photo-preview">
+                </div>
+                <div class="children-column">
+                    <div class="form-group">
+                        <label for="lessonNumber">Номер занятия:</label>
+                        <input type="number" id="lessonNumber" min="1" value="1">
+                    </div>
+                    
+                    <div class="children-section">
+                        <h3>Выберите ребенка:</h3>
+                        <div class="child-buttons" id="childButtons">
+                            <button class="child-btn" data-id="YAKOV2020">Яков</button>
+                            <button class="child-btn" data-id="ARINA2020">Арина</button>
+                            <button class="child-btn" data-id="VASYA2020">Вася</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- КОНЕЦ НОВОЙ СТРУКТУРЫ -->
             
             <div class="action-buttons">
                 <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
