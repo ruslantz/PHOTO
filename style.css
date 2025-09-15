@@ -6,45 +6,32 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #f5f5f7;
     padding: 20px;
-    min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
     color: #333;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 500px;
     margin: 0 auto;
     background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 25px;
-    font-size: 28px;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
 }
 
 .upload-section {
     text-align: center;
     margin-bottom: 30px;
-    padding: 20px;
-    border: 2px dashed #ddd;
-    border-radius: 15px;
-    background: #f8f9fa;
-    transition: all 0.3s;
-}
-
-.upload-section:hover {
-    border-color: #007AFF;
-    background: #e8f4fc;
 }
 
 .file-input {
@@ -53,42 +40,18 @@ h1 {
 
 .upload-btn {
     display: inline-block;
-    padding: 18px 30px;
-    background: linear-gradient(135deg, #007AFF, #0056cc);
+    padding: 15px 30px;
+    background: #007AFF;
     color: white;
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 18px;
-    font-weight: 600;
     border: none;
     width: 100%;
-    transition: transform 0.2s;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-}
-
-.upload-btn:active {
-    transform: scale(0.98);
 }
 
 .tagger-section {
     display: none;
-}
-
-.settings-panel {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 15px;
-    margin: 20px 0;
-    border-left: 4px solid #007AFF;
-}
-
-.settings-title {
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .form-group {
@@ -97,157 +60,69 @@ h1 {
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 600;
-    color: #2c3e50;
-    font-size: 16px;
+    color: #333;
 }
 
-.form-group input, .form-group select {
+.form-group input {
     width: 100%;
-    padding: 16px;
+    padding: 15px;
     border: 2px solid #ddd;
     border-radius: 12px;
     font-size: 16px;
     background: white;
-    transition: border-color 0.3s;
-}
-
-.form-group input:focus, .form-group select:focus {
-    border-color: #007AFF;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-}
-
-.slider-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.slider {
-    flex: 1;
-    -webkit-appearance: none;
-    height: 8px;
-    background: #ddd;
-    border-radius: 4px;
-    outline: none;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #007AFF;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.slider-value {
-    min-width: 50px;
-    text-align: center;
-    font-weight: 600;
-    color: #007AFF;
 }
 
 .photo-preview {
     width: 100%;
-    max-height: 350px;
-    border-radius: 15px;
-    margin: 20px 0;
-    object-fit: contain;
-    border: 2px dashed #ddd;
-    background: #f8f9fa;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.comparison-container {
-    display: flex;
-    gap: 15px;
-    margin: 20px 0;
-}
-
-.comparison-box {
-    flex: 1;
-    text-align: center;
-    padding: 15px;
+    max-height: 300px;
     border-radius: 12px;
-    background: #f8f9fa;
-}
-
-.comparison-title {
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #2c3e50;
-}
-
-.file-size {
-    font-size: 14px;
-    color: #7f8c8d;
+    margin: 15px 0;
+    object-fit: contain;
 }
 
 .action-buttons {
     display: flex;
-    gap: 12px;
-    margin-top: 25px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .action-btn {
     flex: 1;
-    padding: 18px;
+    padding: 15px;
     border: none;
     border-radius: 12px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.action-btn:active {
-    transform: translateY(2px);
 }
 
 .skip-btn {
-    background: linear-gradient(135deg, #FF9500, #f39c12);
-    color: white;
-}
-
-.download-btn {
-    background: linear-gradient(135deg, #34C759, #27ae60);
+    background: #FF9500;
     color: white;
 }
 
 .status {
     text-align: center;
-    margin: 15px 0;
-    padding: 15px;
-    border-radius: 10px;
-    font-weight: 500;
-    font-size: 15px;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: #DDFFE6;
+    color: #007AFF;
 }
 
 .error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: #FFD1D1;
+    color: #FF3B30;
 }
 
 .info {
     background: #e8f4fc;
     color: #0c5460;
-    border: 1px solid #b8daff;
 }
 
 .file-info {
@@ -256,7 +131,6 @@ h1 {
     border-radius: 12px;
     margin: 15px 0;
     font-size: 14px;
-    border-left: 4px solid #007AFF;
 }
 
 .progress-bar {
@@ -270,7 +144,7 @@ h1 {
 
 .progress {
     height: 100%;
-    background: linear-gradient(135deg, #007AFF, #0056cc);
+    background: #007AFF;
     border-radius: 4px;
     transition: width 0.3s;
     width: 0%;
@@ -291,17 +165,11 @@ h1 {
     color: #007AFF;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
     font-size: 16px;
     text-align: center;
 }
 
 .child-btn.active {
-    background: #007AFF;
-    color: white;
-}
-
-.child-btn:hover {
     background: #007AFF;
     color: white;
 }
@@ -314,21 +182,4 @@ h1 {
     margin-bottom: 15px;
     color: #2c3e50;
     text-align: center;
-}
-
-.savings {
-    text-align: center;
-    font-weight: 600;
-    color: #27ae60;
-    margin: 10px 0;
-}
-
-@media (max-width: 500px) {
-    .comparison-container {
-        flex-direction: column;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
 }
