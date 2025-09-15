@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Разметка фото занятий</title>
+    <title>Оптимизатор фото занятий</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,20 +13,19 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f7;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 20px;
-            max-width: 100%;
-            overflow-x: hidden;
+            min-height: 100vh;
             color: #333;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         h1 {
@@ -34,11 +33,25 @@
             margin-bottom: 25px;
             font-size: 28px;
             color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .upload-section {
             text-align: center;
             margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 15px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: #007AFF;
+            background: #e8f4fc;
         }
 
         .file-input {
@@ -68,6 +81,23 @@
             display: none;
         }
 
+        .settings-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #007AFF;
+        }
+
+        .settings-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -80,7 +110,7 @@
             font-size: 16px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 16px;
             border: 2px solid #ddd;
@@ -90,10 +120,42 @@
             transition: border-color 0.3s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #007AFF;
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #007AFF;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #007AFF;
         }
 
         .photo-preview {
@@ -104,6 +166,32 @@
             object-fit: contain;
             border: 2px dashed #ddd;
             background: #f8f9fa;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .comparison-box {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .comparison-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .file-size {
+            font-size: 14px;
+            color: #7f8c8d;
         }
 
         .action-buttons {
@@ -122,6 +210,10 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .action-btn:active {
@@ -130,6 +222,11 @@
 
         .skip-btn {
             background: linear-gradient(135deg, #FF9500, #f39c12);
+            color: white;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #34C759, #27ae60);
             color: white;
         }
 
@@ -183,6 +280,7 @@
             background: linear-gradient(135deg, #007AFF, #0056cc);
             border-radius: 4px;
             transition: width 0.3s;
+            width: 0%;
         }
 
         .child-buttons {
@@ -224,32 +322,98 @@
             color: #2c3e50;
             text-align: center;
         }
+
+        .savings {
+            text-align: center;
+            font-weight: 600;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 500px) {
+            .comparison-container {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📷 Разметка фото занятий</h1>
+        <h1>📷 Оптимизатор фото занятий</h1>
         
         <div class="upload-section">
             <input type="file" id="photoInput" class="file-input" accept="image/*" multiple>
             <button onclick="document.getElementById('photoInput').click()" class="upload-btn">
-                📸 Выбрать фото из галереи
+                📸 Выбрать фото для оптимизации
             </button>
+            <p style="margin-top: 15px; color: #7f8c8d; font-size: 14px;">
+                Поддерживаются JPG, PNG и WebP форматы
+            </p>
         </div>
         
         <div id="taggerSection" class="tagger-section">
             <div class="progress-bar">
-                <div class="progress" id="progressBar" style="width: 0%"></div>
+                <div class="progress" id="progressBar"></div>
             </div>
             
             <div class="file-info" id="fileInfo"></div>
             
             <img id="photoPreview" class="photo-preview">
             
+            <div class="settings-panel">
+                <div class="settings-title">
+                    <span>⚙️ Настройки оптимизации</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="formatSelect">Формат изображения:</label>
+                    <select id="formatSelect">
+                        <option value="webp">WebP (рекомендуется)</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qualitySlider">Качество изображения:</label>
+                    <div class="slider-container">
+                        <input type="range" min="30" max="100" value="80" class="slider" id="qualitySlider">
+                        <span class="slider-value" id="qualityValue">80%</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sizeSlider">Размер изображения (% от оригинала):</label>
+                    <div class="slider-container">
+                        <input type="range" min="10" max="100" value="80" class="slider" id="sizeSlider">
+                        <span class="slider-value" id="sizeValue">80%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <div class="comparison-box">
+                    <div class="comparison-title">Исходный размер</div>
+                    <div id="originalSize" class="file-size">—</div>
+                </div>
+                <div class="comparison-box">
+                    <div class="comparison-title">Новый размер</div>
+                    <div id="newSize" class="file-size">—</div>
+                </div>
+            </div>
+            
+            <div id="savings" class="savings"></div>
+            
             <div class="children-section">
                 <h3>Выберите ребенка:</h3>
                 <div class="child-buttons" id="childButtons">
-                    <!-- Кнопки детей будут добавлены через JS -->
+                    <button class="child-btn" data-id="YAKOV2020">Яков Ситдиков</button>
+                    <button class="child-btn" data-id="ARINA2020">Арина Родионовна</button>
+                    <button class="child-btn" data-id="VASYA2020">Вася Пупкин</button>
                 </div>
             </div>
             
@@ -259,7 +423,12 @@
             </div>
             
             <div class="action-buttons">
-                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
+                <button onclick="skipPhoto()" class="action-btn skip-btn">
+                    <span>⏭️</span> Пропустить фото
+                </button>
+                <button onclick="processAndDownload()" class="action-btn download-btn">
+                    <span>💾</span> Скачать оптимизированное фото
+                </button>
             </div>
             
             <div id="status" class="status info"></div>
@@ -277,127 +446,52 @@
         let currentPhotos = [];
         let currentIndex = 0;
         let selectedChild = '';
+        let originalImageSize = 0;
+        let optimizedImageSize = 0;
 
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
-            createChildButtons();
-            setupFileInput();
-            showStatus('Выберите фото из галереи для начала работы', 'info');
+            setupEventListeners();
+            showStatus('Выберите фото для оптимизации и сохранения', 'info');
         });
 
-        // Создаем кнопки для выбора детей
-        function createChildButtons() {
-            const container = document.getElementById('childButtons');
-            children.forEach(child => {
-                const button = document.createElement('button');
-                button.className = 'child-btn';
-                button.textContent = child.name;
-                button.onclick = () => handleChildSelect(child.id);
-                container.appendChild(button);
+        function setupEventListeners() {
+            // Настройка слайдеров
+            const qualitySlider = document.getElementById('qualitySlider');
+            const qualityValue = document.getElementById('qualityValue');
+            qualitySlider.addEventListener('input', function() {
+                qualityValue.textContent = this.value + '%';
+                if (currentPhotos.length > 0) {
+                    updatePreview();
+                }
             });
-        }
 
-        function handleChildSelect(childId) {
-            if (!currentPhotos.length) return;
-            
-            selectedChild = childId;
-            
-            // Убираем активный класс у всех кнопок
+            const sizeSlider = document.getElementById('sizeSlider');
+            const sizeValue = document.getElementById('sizeValue');
+            sizeSlider.addEventListener('input', function() {
+                sizeValue.textContent = this.value + '%';
+                if (currentPhotos.length > 0) {
+                    updatePreview();
+                }
+            });
+
+            // Выбор формата
+            document.getElementById('formatSelect').addEventListener('change', function() {
+                if (currentPhotos.length > 0) {
+                    updatePreview();
+                }
+            });
+
+            // Выбор ребенка
             document.querySelectorAll('.child-btn').forEach(btn => {
-                btn.classList.remove('active');
+                btn.addEventListener('click', function() {
+                    selectedChild = this.getAttribute('data-id');
+                    document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
             });
-            
-            // Добавляем активный класс выбранной кнопке
-            event.target.classList.add('active');
-            
-            // Автоматически сохраняем фото
-            saveToGallery();
-        }
 
-        // Сохранение в галерею
-        async function saveToGallery() {
-            if (!selectedChild) return;
-
-            const file = currentPhotos[currentIndex];
-            const lessonNumber = document.getElementById('lessonNumber').value;
-            const child = children.find(c => c.id === selectedChild);
-            
-            try {
-                showStatus('Сохраняем в галерею...', 'info');
-                
-                // Создаем новое изображение с метаданными
-                const img = new Image();
-                img.onload = async function() {
-                    // Создаем canvas для добавления текста
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height + 60; // Место для текста
-                    
-                    const ctx = canvas.getContext('2d');
-                    
-                    // Заливаем белым фон
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Рисуем оригинальное изображение
-                    ctx.drawImage(img, 0, 60);
-                    
-                    // Добавляем текст с информацией
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.font = '20px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${child.name} - Занятие ${lessonNumber}`, canvas.width/2, 30);
-                    
-                    // Конвертируем в blob
-                    canvas.toBlob(async function(blob) {
-                        try {
-                            // Fallback для iOS - скачивание
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `${child.name}_занятие_${lessonNumber}.jpg`;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                            showStatus('✅ Фото скачано!', 'success');
-                            
-                            // Переходим к следующему фото
-                            currentIndex++;
-                            updateProgress();
-                            setTimeout(showCurrentPhoto, 1500);
-                            
-                        } catch (error) {
-                            console.error('Ошибка:', error);
-                            showStatus('❌ Ошибка сохранения. Попробуйте снова.', 'error');
-                        }
-                    }, 'image/jpeg', 0.9);
-                };
-                
-                img.src = URL.createObjectURL(file);
-                
-            } catch (error) {
-                console.error('Ошибка:', error);
-                showStatus('❌ Ошибка при обработке фото', 'error');
-            }
-        }
-
-        function updateProgress() {
-            const progress = (currentIndex / currentPhotos.length) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-
-        function showFileInfo(file) {
-            const fileInfo = document.getElementById('fileInfo');
-            const size = (file.size / 1024).toFixed(1);
-            fileInfo.innerHTML = `
-                <strong>Фото ${currentIndex + 1} из ${currentPhotos.length}</strong><br>
-                Имя: ${file.name}<br>
-                Размер: ${size} KB
-            `;
-        }
-
-        function setupFileInput() {
+            // Загрузка файлов
             const fileInput = document.getElementById('photoInput');
             fileInput.addEventListener('change', handleFileSelect);
         }
@@ -425,25 +519,175 @@
             }
 
             const file = currentPhotos[currentIndex];
-            const reader = new FileReader();
+            originalImageSize = file.size;
+            updateFileInfo(file);
             
+            const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('photoPreview').src = e.target.result;
                 selectedChild = '';
                 document.querySelectorAll('.child-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                showFileInfo(file);
-                showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
+                
+                // Обновляем предпросмотр с настройками по умолчанию
+                setTimeout(updatePreview, 100);
             };
             
             reader.readAsDataURL(file);
+        }
+
+        function updatePreview() {
+            if (currentIndex >= currentPhotos.length) return;
+
+            const file = currentPhotos[currentIndex];
+            const quality = parseInt(document.getElementById('qualitySlider').value);
+            const scale = parseInt(document.getElementById('sizeSlider').value) / 100;
+            const format = document.getElementById('formatSelect').value;
+
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Вычисляем новые размеры
+                const newWidth = Math.round(img.width * scale);
+                const newHeight = Math.round(img.height * scale);
+                
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                
+                // Рисуем изображение с новыми размерами
+                ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                
+                // Конвертируем в выбранный формат
+                let mimeType = 'image/jpeg';
+                if (format === 'webp') mimeType = 'image/webp';
+                else if (format === 'png') mimeType = 'image/png';
+                
+                canvas.toBlob(function(blob) {
+                    optimizedImageSize = blob.size;
+                    updateComparison();
+                    document.getElementById('photoPreview').src = URL.createObjectURL(blob);
+                }, mimeType, quality / 100);
+            };
+            
+            img.src = URL.createObjectURL(file);
+        }
+
+        function updateFileInfo(file) {
+            const fileInfo = document.getElementById('fileInfo');
+            const size = formatFileSize(file.size);
+            fileInfo.innerHTML = `
+                <strong>Фото ${currentIndex + 1} из ${currentPhotos.length}</strong><br>
+                Имя: ${file.name}<br>
+                Размер: ${size}<br>
+                Тип: ${file.type || 'image'}
+            `;
+        }
+
+        function updateComparison() {
+            document.getElementById('originalSize').textContent = formatFileSize(originalImageSize);
+            document.getElementById('newSize').textContent = formatFileSize(optimizedImageSize);
+            
+            const savings = originalImageSize - optimizedImageSize;
+            const percent = (savings / originalImageSize * 100).toFixed(1);
+            
+            if (savings > 0) {
+                document.getElementById('savings').textContent = 
+                    `Экономия: ${formatFileSize(savings)} (${percent}%)`;
+            } else {
+                document.getElementById('savings').textContent = '';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function processAndDownload() {
+            if (!selectedChild) {
+                showStatus('Сначала выберите ребенка!', 'error');
+                return;
+            }
+
+            const file = currentPhotos[currentIndex];
+            const lessonNumber = document.getElementById('lessonNumber').value;
+            const quality = parseInt(document.getElementById('qualitySlider').value);
+            const scale = parseInt(document.getElementById('sizeSlider').value) / 100;
+            const format = document.getElementById('formatSelect').value;
+            const child = children.find(c => c.id === selectedChild);
+            
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Вычисляем новые размеры
+                const newWidth = Math.round(img.width * scale);
+                const newHeight = Math.round(img.height * scale);
+                
+                canvas.width = newWidth;
+                canvas.height = newHeight + 60; // Место для текста
+                
+                // Заливаем белым фон
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Рисуем оригинальное изображение
+                ctx.drawImage(img, 0, 60, newWidth, newHeight);
+                
+                // Добавляем текст с информацией
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${child.name} - Занятие ${lessonNumber}`, canvas.width/2, 30);
+                
+                // Конвертируем в выбранный формат
+                let mimeType = 'image/jpeg';
+                let extension = 'jpg';
+                
+                if (format === 'webp') {
+                    mimeType = 'image/webp';
+                    extension = 'webp';
+                } else if (format === 'png') {
+                    mimeType = 'image/png';
+                    extension = 'png';
+                }
+                
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${child.name}_занятие_${lessonNumber}.${extension}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showStatus('✅ Фото оптимизировано и скачано!', 'success');
+                    
+                    // Переходим к следующему фото
+                    currentIndex++;
+                    updateProgress();
+                    setTimeout(showCurrentPhoto, 1500);
+                }, mimeType, quality / 100);
+            };
+            
+            img.src = URL.createObjectURL(file);
         }
 
         function skipPhoto() {
             currentIndex++;
             updateProgress();
             showCurrentPhoto();
+        }
+
+        function updateProgress() {
+            const progress = (currentIndex / currentPhotos.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
         }
 
         function showStatus(message, type = '') {
