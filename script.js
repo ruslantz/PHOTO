@@ -58,8 +58,7 @@ function showCurrentPhoto() {
     }
 
     const file = currentPhotos[currentIndex];
-    updateFileInfo(file);
-    
+       
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById('photoPreview').src = e.target.result;
@@ -105,15 +104,6 @@ function savePhoto() {
     setTimeout(showCurrentPhoto, 1000);
 }
 
-function updateFileInfo(file) {
-    const fileInfo = document.getElementById('fileInfo');
-    const size = (file.size / 1024).toFixed(1);
-    fileInfo.innerHTML = `
-        <strong>Фото ${currentIndex + 1} из ${currentPhotos.length}</strong><br>
-        Имя: ${file.name}<br>
-        Размер: ${size} KB
-    `;
-}
 
 function skipPhoto() {
     currentIndex++;
