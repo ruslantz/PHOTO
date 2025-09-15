@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Разметка фото занятий</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            padding: 20px;
+            max-width: 100%;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        .instructions {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 18px 30px;
+            background: linear-gradient(135deg, #007AFF, #0056cc);
+            color: white;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .upload-btn:active {
+            transform: scale(0.98);
+        }
+
+        .tagger-section {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            border-color: #007AFF;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-height: 350px;
+            border-radius: 15px;
+            margin: 20px 0;
+            object-fit: contain;
+            border: 2px dashed #ddd;
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #34C759, #27ae60);
+            color: white;
+        }
+
+        .skip-btn {
+            background: linear-gradient(135deg, #FF9500, #f39c12);
+            color: white;
+        }
+
+        .status {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #e8f4fc;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+
+        .file-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            border-left: 4px solid #007AFF;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #007AFF, #0056cc);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .child-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .child-btn {
+            padding: 12px;
+            border: 2px solid #007AFF;
+            border-radius: 10px;
+            background: white;
+            color: #007AFF;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .child-btn.active {
+            background: #007AFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 Разметка фото занятий</h1>
+        
+        <div class="instructions">
+            <h3>📋 Как использовать:</h3>
+            <p>1. Выберите фото из галереи<br>
+            2. Выберите ребенка и номер занятия<br>
+            3. Нажмите "Сохранить в галерею"<br>
+            4. Фото сохранится в вашу галерею iPhone</p>
+        </div>
+        
+        <div class="upload-section">
+            <input type="file" id="photoInput" class="file-input" accept="image/*" multiple>
+            <button onclick="document.getElementById('photoInput').click()" class="upload-btn">
+                📸 Выбрать фото из галереи
+            </button>
+        </div>
+        
+        <div id="taggerSection" class="tagger-section">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="file-info" id="fileInfo"></div>
+            
+            <div class="form-group">
+                <label>Выберите ребенка:</label>
+                <div class="child-buttons" id="childButtons">
+                    <!-- Кнопки детей будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="lessonNumber">Номер занятия:</label>
+                <input type="number" id="lessonNumber" min="1" value="1">
+            </div>
+            
+            <img id="photoPreview" class="photo-preview">
+            
+            <div class="action-buttons">
+                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить</button>
+                <button onclick="saveToGallery()" class="action-btn next-btn">💾 Сохранить в галерею</button>
+            </div>
+            
+            <div id="status" class="status info"></div>
+        </div>
+    </div>
+
+    <script>
+        // База данных детей
+        const children = [
+            { id: "YAKOV2020", name: "Яков Ситдиков" },
+            { id: "ARINA2020", name: "Арина Родионовна" },
+            { id: "VASYA2020", name: "Вася Пупкин" }
+        ];
+
+        let currentPhotos = [];
+        let currentIndex = 0;
+        let selectedChild = '';
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            createChildButtons();
+            setupFileInput();
+            showStatus('Выберите фото из галереи для начала работы', 'info');
+        });
+
+        // Создаем кнопки для выбора детей
+        function createChildButtons() {
+            const container = document.getElementById('childButtons');
+            children.forEach(child => {
+                const button = document.createElement('button');
+                button.className = 'child-btn';
+                button.textContent = child.name;
+                button.onclick = () => selectChild(child.id);
+                container.appendChild(button);
+            });
+        }
+
+        function selectChild(childId) {
+            selectedChild = childId;
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.child-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Добавляем активный класс выбранной кнопке
+            event.target.classList.add('active');
+            showStatus('Ребенок выбран! Теперь нажмите "Сохранить в галерею"', 'info');
+        }
+
+        // Сохранение в галерею iPhone
+        async function saveToGallery() {
+            if (!selectedChild) {
+                showStatus('Сначала выберите ребенка!', 'error');
+                return;
+            }
+
+            const file = currentPhotos[currentIndex];
+            const lessonNumber = document.getElementById('lessonNumber').value;
+            const child = children.find(c => c.id === selectedChild);
+            
+            try {
+                showStatus('Сохраняем в галерею...', 'info');
+                
+                // Создаем новое изображение с метаданными
+                const img = new Image();
+                img.onload = async function() {
+                    // Создаем canvas для добавления текста
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height + 60; // Место для текста
+                    
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Заливаем белым фон
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Рисуем оригинальное изображение
+                    ctx.drawImage(img, 0, 60);
+                    
+                    // Добавляем текст с информацией
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = '20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${child.name} - Занятие ${lessonNumber}`, canvas.width/2, 30);
+                    
+                    // Конвертируем в blob
+                    canvas.toBlob(async function(blob) {
+                        try {
+                            // Пытаемся использовать Native Filesystem API
+                            if ('showSaveFilePicker' in window) {
+                                const handle = await window.showSaveFilePicker({
+                                    suggestedName: `${child.name}_занятие_${lessonNumber}.jpg`,
+                                    types: [{
+                                        description: 'JPEG Image',
+                                        accept: {'image/jpeg': ['.jpg']}
+                                    }]
+                                });
+                                const writable = await handle.createWritable();
+                                await writable.write(blob);
+                                await writable.close();
+                                showStatus('✅ Фото сохранено!', 'success');
+                            } else {
+                                // Fallback для iOS - скачивание
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `${child.name}_занятие_${lessonNumber}.jpg`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                                showStatus('✅ Фото скачано! Откройте "Файлы" чтобы сохранить в галерею', 'success');
+                            }
+                            
+                            // Переходим к следующему фото
+                            currentIndex++;
+                            updateProgress();
+                            setTimeout(showCurrentPhoto, 1500);
+                            
+                        } catch (error) {
+                            console.error('Ошибка:', error);
+                            showStatus('❌ Ошибка сохранения. Попробуйте снова.', 'error');
+                        }
+                    }, 'image/jpeg', 0.9);
+                };
+                
+                img.src = URL.createObjectURL(file);
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showStatus('❌ Ошибка при обработке фото', 'error');
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentIndex / currentPhotos.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showFileInfo(file) {
+            const fileInfo = document.getElementById('fileInfo');
+            const size = (file.size / 1024).toFixed(1);
+            fileInfo.innerHTML = `
+                <strong>Фото ${currentIndex + 1} из ${currentPhotos.length}</strong><br>
+                Имя: ${file.name}<br>
+                Размер: ${size} KB
+            `;
+        }
+
+        function setupFileInput() {
+            const fileInput = document.getElementById('photoInput');
+            fileInput.addEventListener('change', handleFileSelect);
+        }
+
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+
+            currentPhotos = files;
+            currentIndex = 0;
+            showTaggerSection();
+            showCurrentPhoto();
+        }
+
+        function showTaggerSection() {
+            document.getElementById('taggerSection').style.display = 'block';
+            document.querySelector('.upload-section').style.display = 'none';
+            updateProgress();
+        }
+
+        function showCurrentPhoto() {
+            if (currentIndex >= currentPhotos.length) {
+                showStatus('🎉 Все фото обработаны!', 'success');
+                return;
+            }
+
+            const file = currentPhotos[currentIndex];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('photoPreview').src = e.target.result;
+                selectedChild = '';
+                document.querySelectorAll('.child-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                showFileInfo(file);
+                showStatus('Выберите ребенка и нажмите "Сохранить в галерею"', 'info');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function skipPhoto() {
+            currentIndex++;
+            updateProgress();
+            showCurrentPhoto();
+        }
+
+        function showStatus(message, type = '') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html>
