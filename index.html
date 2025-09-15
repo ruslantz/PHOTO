@@ -36,20 +36,6 @@
             color: #2c3e50;
         }
 
-        .instructions {
-            background: #e8f4fc;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .instructions h3 {
-            margin-bottom: 10px;
-            color: #2980b9;
-        }
-
         .upload-section {
             text-align: center;
             margin-bottom: 30px;
@@ -94,7 +80,7 @@
             font-size: 16px;
         }
 
-        .form-group select, .form-group input {
+        .form-group input {
             width: 100%;
             padding: 16px;
             border: 2px solid #ddd;
@@ -104,7 +90,7 @@
             transition: border-color 0.3s;
         }
 
-        .form-group select:focus, .form-group input:focus {
+        .form-group input:focus {
             border-color: #007AFF;
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
@@ -140,11 +126,6 @@
 
         .action-btn:active {
             transform: translateY(2px);
-        }
-
-        .next-btn {
-            background: linear-gradient(135deg, #34C759, #27ae60);
-            color: white;
         }
 
         .skip-btn {
@@ -208,37 +189,46 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
         .child-btn {
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #007AFF;
-            border-radius: 10px;
+            border-radius: 12px;
             background: white;
             color: #007AFF;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 16px;
+            text-align: center;
         }
 
         .child-btn.active {
             background: #007AFF;
             color: white;
         }
+
+        .child-btn:hover {
+            background: #007AFF;
+            color: white;
+        }
+
+        .children-section {
+            margin-bottom: 20px;
+        }
+
+        .children-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📷 Разметка фото занятий</h1>
-        
-        <div class="instructions">
-            <h3>📋 Как использовать:</h3>
-            <p>1. Выберите фото из галереи<br>
-            2. Выберите ребенка и номер занятия<br>
-            3. Нажмите "Сохранить в галерею"<br>
-            4. Фото сохранится в вашу галерею iPhone</p>
-        </div>
         
         <div class="upload-section">
             <input type="file" id="photoInput" class="file-input" accept="image/*" multiple>
@@ -254,8 +244,10 @@
             
             <div class="file-info" id="fileInfo"></div>
             
-            <div class="form-group">
-                <label>Выберите ребенка:</label>
+            <img id="photoPreview" class="photo-preview">
+            
+            <div class="children-section">
+                <h3>Выберите ребенка:</h3>
                 <div class="child-buttons" id="childButtons">
                     <!-- Кнопки детей будут добавлены через JS -->
                 </div>
@@ -266,11 +258,8 @@
                 <input type="number" id="lessonNumber" min="1" value="1">
             </div>
             
-            <img id="photoPreview" class="photo-preview">
-            
             <div class="action-buttons">
-                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить</button>
-                <button onclick="saveToGallery()" class="action-btn next-btn">💾 Сохранить в галерею</button>
+                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
             </div>
             
             <div id="status" class="status info"></div>
@@ -303,28 +292,31 @@
                 const button = document.createElement('button');
                 button.className = 'child-btn';
                 button.textContent = child.name;
-                button.onclick = () => selectChild(child.id);
+                button.onclick = () => handleChildSelect(child.id);
                 container.appendChild(button);
             });
         }
 
-        function selectChild(childId) {
+        function handleChildSelect(childId) {
+            if (!currentPhotos.length) return;
+            
             selectedChild = childId;
+            
             // Убираем активный класс у всех кнопок
             document.querySelectorAll('.child-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
+            
             // Добавляем активный класс выбранной кнопке
             event.target.classList.add('active');
-            showStatus('Ребенок выбран! Теперь нажмите "Сохранить в галерею"', 'info');
+            
+            // Автоматически сохраняем фото
+            saveToGallery();
         }
 
-        // Сохранение в галерею iPhone
+        // Сохранение в галерею
         async function saveToGallery() {
-            if (!selectedChild) {
-                showStatus('Сначала выберите ребенка!', 'error');
-                return;
-            }
+            if (!selectedChild) return;
 
             const file = currentPhotos[currentIndex];
             const lessonNumber = document.getElementById('lessonNumber').value;
@@ -359,31 +351,16 @@
                     // Конвертируем в blob
                     canvas.toBlob(async function(blob) {
                         try {
-                            // Пытаемся использовать Native Filesystem API
-                            if ('showSaveFilePicker' in window) {
-                                const handle = await window.showSaveFilePicker({
-                                    suggestedName: `${child.name}_занятие_${lessonNumber}.jpg`,
-                                    types: [{
-                                        description: 'JPEG Image',
-                                        accept: {'image/jpeg': ['.jpg']}
-                                    }]
-                                });
-                                const writable = await handle.createWritable();
-                                await writable.write(blob);
-                                await writable.close();
-                                showStatus('✅ Фото сохранено!', 'success');
-                            } else {
-                                // Fallback для iOS - скачивание
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `${child.name}_занятие_${lessonNumber}.jpg`;
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
-                                URL.revokeObjectURL(url);
-                                showStatus('✅ Фото скачано! Откройте "Файлы" чтобы сохранить в галерею', 'success');
-                            }
+                            // Fallback для iOS - скачивание
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${child.name}_занятие_${lessonNumber}.jpg`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            showStatus('✅ Фото скачано!', 'success');
                             
                             // Переходим к следующему фото
                             currentIndex++;
@@ -457,7 +434,7 @@
                     btn.classList.remove('active');
                 });
                 showFileInfo(file);
-                showStatus('Выберите ребенка и нажмите "Сохранить в галерею"', 'info');
+                showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
             };
             
             reader.readAsDataURL(file);
