@@ -69,28 +69,55 @@ function showTaggerSection() {
     updateProgress();
 }
 
-function showCurrentPhoto() {
+async function showCurrentPhoto() {
     if (currentIndex >= currentPhotos.length) {
         showStatus('🎉 Все фото обработаны!', 'success');
         return;
     }
 
     const file = currentPhotos[currentIndex];
-       
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('photoPreview').src = e.target.result;
-        selectedChild = '';
-        document.querySelectorAll('.child-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
-    };
     
-    reader.readAsDataURL(file);
+    // Проверяем формат файла
+    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+        // Конвертируем HEIC в JPEG для превью
+        try {
+            showStatus('Конвертируем HEIC...', 'info');
+            const jpegBlob = await convertHeicToJpeg(file);
+            const jpegUrl = URL.createObjectURL(jpegBlob);
+            document.getElementById('photoPreview').src = jpegUrl;
+        } catch (error) {
+            showStatus('Ошибка конвертации HEIC', 'error');
+            console.error('HEIC conversion error:', error);
+            return;
+        }
+    } else {
+        // Для обычных форматов
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('photoPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    selectedChild = '';
+    document.querySelectorAll('.child-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
 }
 
-function savePhoto() {
+// Функция конвертации HEIC в JPEG
+async function convertHeicToJpeg(heicFile) {
+    const arrayBuffer = await heicFile.arrayBuffer();
+    const convertResult = await heicConvert({
+        buffer: arrayBuffer,
+        format: 'JPEG',
+        quality: 0.8
+    });
+    return new Blob([convertResult], { type: 'image/jpeg' });
+}
+
+async function savePhoto() {
     const lessonNumber = document.getElementById('lessonNumber').value;
     const file = currentPhotos[currentIndex];
     const child = children.find(c => c.id === selectedChild);
@@ -101,11 +128,24 @@ function savePhoto() {
     }
 
     // Создаем имя файла
-    const extension = file.name.split('.').pop();
+    let extension = file.name.split('.').pop();
+    let fileToSave = file;
+    
+    // Если HEIC, конвертируем в JPEG при сохранении
+    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+        try {
+            fileToSave = await convertHeicToJpeg(file);
+            extension = 'jpg';
+        } catch (error) {
+            showStatus('Ошибка конвертации HEIC', 'error');
+            return;
+        }
+    }
+    
     const fileName = `${selectedChild}.${extension}`;
     
     // Скачиваем файл
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(fileToSave);
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
