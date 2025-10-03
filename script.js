@@ -27,6 +27,7 @@ let currentPhotos = [];
 let currentIndex = 0;
 let selectedChild = '';
 let currentPreviewUrl = null;
+let isProcessing = false; // Флаг для защиты от множественных нажатий
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
@@ -38,6 +39,8 @@ function setupEventListeners() {
     // Выбор ребенка
     document.querySelectorAll('.child-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+            if (isProcessing) return; // Защита от множественных нажатий
+            
             selectedChild = this.getAttribute('data-id');
             document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
@@ -71,6 +74,8 @@ function showTaggerSection() {
 }
 
 async function showCurrentPhoto() {
+    if (isProcessing) return; // Защита от повторного вызова
+    
     // Очищаем предыдущее превью
     if (currentPreviewUrl) {
         URL.revokeObjectURL(currentPreviewUrl);
@@ -99,6 +104,8 @@ async function showCurrentPhoto() {
     const file = currentPhotos[currentIndex];
     
     try {
+        isProcessing = true;
+        
         // Проверяем формат файла
         if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
             // Конвертируем HEIC в JPEG для превью
@@ -122,12 +129,16 @@ async function showCurrentPhoto() {
         console.error('Error showing photo:', error);
         showStatus('Ошибка загрузки фото', 'error');
         // Пропускаем проблемное фото
+        currentIndex++;
+        updateProgress();
         setTimeout(() => {
-            currentIndex++;
-            updateProgress();
+            isProcessing = false;
             showCurrentPhoto();
-        }, 1000);
+        }, 500);
+        return;
     }
+    
+    isProcessing = false;
 }
 
 // Функция для чтения файла как DataURL с Promise
@@ -152,12 +163,17 @@ async function convertHeicToJpeg(heicFile) {
 }
 
 async function savePhoto() {
+    if (isProcessing) return; // Защита от множественных нажатий
+    
+    isProcessing = true;
+    
     const lessonNumber = document.getElementById('lessonNumber').value;
     const file = currentPhotos[currentIndex];
     const child = children.find(c => c.id === selectedChild);
     
     if (!child) {
         showStatus('Ошибка: ребенок не найден', 'error');
+        isProcessing = false;
         return;
     }
 
@@ -172,35 +188,51 @@ async function savePhoto() {
             extension = 'jpg';
         } catch (error) {
             showStatus('Ошибка конвертации HEIC', 'error');
+            isProcessing = false;
             return;
         }
     }
     
     const fileName = `${selectedChild}.${extension}`;
     
-    // Скачиваем файл
-    const url = URL.createObjectURL(fileToSave);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    
-    // Даем время на скачивание перед очисткой
-    setTimeout(() => {
-        URL.revokeObjectURL(url);
+    try {
+        // Скачиваем файл
+        const url = URL.createObjectURL(fileToSave);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         
-        showStatus(`✅ Сохранено: ${fileName}`, 'success');
+        // Даем время на скачивание перед очисткой
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+            
+            showStatus(`✅ Сохранено: ${fileName}`, 'success');
+            
+            // Переходим к следующему фото
+            currentIndex++;
+            updateProgress();
+            
+            setTimeout(() => {
+                isProcessing = false;
+                showCurrentPhoto();
+            }, 300);
+        }, 100);
         
-        // Переходим к следующему фото с задержкой
-        currentIndex++;
-        updateProgress();
-        setTimeout(showCurrentPhoto, 500);
-    }, 100);
+    } catch (error) {
+        console.error('Save error:', error);
+        showStatus('Ошибка сохранения', 'error');
+        isProcessing = false;
+    }
 }
 
 function skipPhoto() {
+    if (isProcessing) return; // Защита от множественных нажатий
+    
+    isProcessing = true;
+    
     // Очищаем превью
     if (currentPreviewUrl) {
         URL.revokeObjectURL(currentPreviewUrl);
@@ -209,7 +241,11 @@ function skipPhoto() {
     
     currentIndex++;
     updateProgress();
-    setTimeout(showCurrentPhoto, 100);
+    
+    setTimeout(() => {
+        isProcessing = false;
+        showCurrentPhoto();
+    }, 300);
 }
 
 function updateProgress() {
@@ -239,6 +275,7 @@ function resetSession() {
     currentPhotos = [];
     currentIndex = 0;
     selectedChild = '';
+    isProcessing = false;
     
     document.getElementById('taggerSection').style.display = 'none';
     document.querySelector('.upload-section').style.display = 'block';
