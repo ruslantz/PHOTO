@@ -1,8 +1,26 @@
 // База данных детей
 const children = [
-    { id: "YAKOV2020", name: "Яков Ситдиков" },
-    { id: "ARINA2020", name: "Арина Родионовна" },
-    { id: "VASYA2020", name: "Вася Пупкин" }
+  { id: "AlievaN77", name: "Алиева Николь" },
+  { id: "ZhuravlevaE96", name: "Журавлева Ева" },
+  { id: "IvanushkinM09", name: "Иванушкин Марк" },
+  { id: "KaisinaK55", name: "Кайсина Кира" },
+  { id: "KapitonovM17", name: "Капитонов Михаил" },
+  { id: "OstapchukA15", name: "Остапчук Арсений" },
+  { id: "SalyakinA30", name: "Салякин Алексей" },
+  { id: "ShilinM81", name: "Шилин Максим" },
+  { id: "AnaevB73", name: "Анаев Борис" },
+  { id: "BaranovD88", name: "Баранов Даниил" },
+  { id: "DjahayaS42", name: "Джахая Сандро" },
+  { id: "ZhuravlevaA51", name: "Журавлева Аврора" },
+  { id: "KazaryanA12", name: "Казарян Артемий" },
+  { id: "KuznetsovA68", name: "Кузнецов Арсений" },
+  { id: "PantileykoA24", name: "Пантилейко Артем" },
+  { id: "RutskiyY33", name: "Руцкий Ян" },
+  { id: "StepanenkoM65", name: "Степаненко Мия" },
+  { id: "ChzhouS77", name: "Чжоу Шуянь" },
+  { id: "SavinovaE32", name: "Савинова Елизавета" },
+  { id: "ZicinL25", name: "Цыцин Лука" },
+  { id: "SavinovI64", name: "Савинов Илья" }
 ];
 
 let currentPhotos = [];
@@ -84,7 +102,7 @@ function savePhoto() {
 
     // Создаем имя файла
     const extension = file.name.split('.').pop();
-    const fileName = `${child.name}_занятие${lessonNumber}.${extension}`;
+    const fileName = `${selectedChild}_занятие${lessonNumber}.${extension}`;
     
     // Скачиваем файл
     const url = URL.createObjectURL(file);
@@ -103,7 +121,6 @@ function savePhoto() {
     updateProgress();
     setTimeout(showCurrentPhoto, 1000);
 }
-
 
 function skipPhoto() {
     currentIndex++;
