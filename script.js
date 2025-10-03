@@ -27,7 +27,6 @@ let currentPhotos = [];
 let currentIndex = 0;
 let selectedChild = '';
 let currentPreviewUrl = null;
-let isProcessing = false; // Флаг для защиты от множественных нажатий
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
@@ -39,16 +38,10 @@ function setupEventListeners() {
     // Выбор ребенка
     document.querySelectorAll('.child-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            if (isProcessing) return; // Защита от множественных нажатий
-            
             selectedChild = this.getAttribute('data-id');
             document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
-            // Автоматически сохраняем при выборе ребенка
-            if (currentPhotos.length > 0) {
-                savePhoto();
-            }
+            showStatus('Нажмите "Сохранить фото"', 'info');
         });
     });
 
@@ -71,11 +64,10 @@ function showTaggerSection() {
     document.getElementById('taggerSection').style.display = 'block';
     document.querySelector('.upload-section').style.display = 'none';
     updateProgress();
+    updatePhotoCounter();
 }
 
 async function showCurrentPhoto() {
-    if (isProcessing) return; // Защита от повторного вызова
-    
     // Очищаем предыдущее превью
     if (currentPreviewUrl) {
         URL.revokeObjectURL(currentPreviewUrl);
@@ -84,28 +76,15 @@ async function showCurrentPhoto() {
     
     if (currentIndex >= currentPhotos.length) {
         showStatus('🎉 Все фото обработаны!', 'success');
-        
-        // Добавляем кнопку для новых фото
-        const newSessionBtn = document.createElement('button');
-        newSessionBtn.textContent = '📸 Новые фото';
-        newSessionBtn.className = 'upload-btn';
-        newSessionBtn.style.marginTop = '10px';
-        newSessionBtn.onclick = function() {
-            resetSession();
-        };
-        
-        const statusDiv = document.getElementById('status');
-        if (!statusDiv.querySelector('.upload-btn')) {
-            statusDiv.appendChild(newSessionBtn);
-        }
+        document.getElementById('saveBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('skipBtn').style.display = 'none';
         return;
     }
 
     const file = currentPhotos[currentIndex];
     
     try {
-        isProcessing = true;
-        
         // Проверяем формат файла
         if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
             // Конвертируем HEIC в JPEG для превью
@@ -123,22 +102,21 @@ async function showCurrentPhoto() {
         document.querySelectorAll('.child-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
+        
+        // Показываем актуальные кнопки
+        document.getElementById('saveBtn').style.display = 'inline-block';
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('skipBtn').style.display = 'inline-block';
+        
+        showStatus(`Фото ${currentIndex + 1} из ${currentPhotos.length}. Выберите ребенка и нажмите "Сохранить фото"`, 'info');
+        updatePhotoCounter();
         
     } catch (error) {
         console.error('Error showing photo:', error);
         showStatus('Ошибка загрузки фото', 'error');
         // Пропускаем проблемное фото
-        currentIndex++;
-        updateProgress();
-        setTimeout(() => {
-            isProcessing = false;
-            showCurrentPhoto();
-        }, 500);
-        return;
+        setTimeout(nextPhoto, 1000);
     }
-    
-    isProcessing = false;
 }
 
 // Функция для чтения файла как DataURL с Promise
@@ -162,18 +140,18 @@ async function convertHeicToJpeg(heicFile) {
     return new Blob([convertResult], { type: 'image/jpeg' });
 }
 
-async function savePhoto() {
-    if (isProcessing) return; // Защита от множественных нажатий
-    
-    isProcessing = true;
-    
+function savePhoto() {
+    if (!selectedChild) {
+        showStatus('Сначала выберите ребенка', 'error');
+        return;
+    }
+
     const lessonNumber = document.getElementById('lessonNumber').value;
     const file = currentPhotos[currentIndex];
     const child = children.find(c => c.id === selectedChild);
     
     if (!child) {
         showStatus('Ошибка: ребенок не найден', 'error');
-        isProcessing = false;
         return;
     }
 
@@ -184,11 +162,10 @@ async function savePhoto() {
     // Если HEIC, конвертируем в JPEG при сохранении
     if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
         try {
-            fileToSave = await convertHeicToJpeg(file);
+            fileToSave = convertHeicToJpeg(file);
             extension = 'jpg';
         } catch (error) {
             showStatus('Ошибка конвертации HEIC', 'error');
-            isProcessing = false;
             return;
         }
     }
@@ -205,47 +182,27 @@ async function savePhoto() {
         a.click();
         document.body.removeChild(a);
         
-        // Даем время на скачивание перед очисткой
         setTimeout(() => {
             URL.revokeObjectURL(url);
-            
             showStatus(`✅ Сохранено: ${fileName}`, 'success');
-            
-            // Переходим к следующему фото
-            currentIndex++;
-            updateProgress();
-            
-            setTimeout(() => {
-                isProcessing = false;
-                showCurrentPhoto();
-            }, 300);
         }, 100);
         
     } catch (error) {
         console.error('Save error:', error);
         showStatus('Ошибка сохранения', 'error');
-        isProcessing = false;
     }
 }
 
-function skipPhoto() {
-    if (isProcessing) return; // Защита от множественных нажатий
-    
-    isProcessing = true;
-    
-    // Очищаем превью
-    if (currentPreviewUrl) {
-        URL.revokeObjectURL(currentPreviewUrl);
-        currentPreviewUrl = null;
-    }
-    
+function nextPhoto() {
     currentIndex++;
     updateProgress();
-    
-    setTimeout(() => {
-        isProcessing = false;
-        showCurrentPhoto();
-    }, 300);
+    updatePhotoCounter();
+    showCurrentPhoto();
+}
+
+function skipPhoto() {
+    showStatus('Фото пропущено', 'warning');
+    nextPhoto();
 }
 
 function updateProgress() {
@@ -253,16 +210,17 @@ function updateProgress() {
     document.getElementById('progressBar').style.width = progress + '%';
 }
 
+function updatePhotoCounter() {
+    const counter = document.getElementById('photoCounter');
+    if (counter) {
+        counter.textContent = `${currentIndex + 1} / ${currentPhotos.length}`;
+    }
+}
+
 function showStatus(message, type = '') {
     const statusDiv = document.getElementById('status');
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
-    
-    // Удаляем старые кнопки если есть
-    const oldBtn = statusDiv.querySelector('button');
-    if (oldBtn && !message.includes('🎉')) {
-        oldBtn.remove();
-    }
 }
 
 function resetSession() {
@@ -275,7 +233,6 @@ function resetSession() {
     currentPhotos = [];
     currentIndex = 0;
     selectedChild = '';
-    isProcessing = false;
     
     document.getElementById('taggerSection').style.display = 'none';
     document.querySelector('.upload-section').style.display = 'block';
@@ -284,6 +241,11 @@ function resetSession() {
     document.querySelectorAll('.child-btn').forEach(btn => {
         btn.classList.remove('active');
     });
+    
+    // Показываем кнопки обратно
+    document.getElementById('saveBtn').style.display = 'inline-block';
+    document.getElementById('nextBtn').style.display = 'inline-block';
+    document.getElementById('skipBtn').style.display = 'inline-block';
     
     showStatus('Выберите фото для начала работы', 'info');
 }
