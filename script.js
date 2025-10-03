@@ -102,7 +102,7 @@ function savePhoto() {
 
     // Создаем имя файла
     const extension = file.name.split('.').pop();
-    const fileName = `${selectedChild}_занятие${lessonNumber}.${extension}`;
+    const fileName = `${selectedChild}.${extension}`;
     
     // Скачиваем файл
     const url = URL.createObjectURL(file);
