@@ -98,25 +98,49 @@ h1 {
     border: 2px solid #eee;
 }
 
+.photo-counter {
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+    color: #666;
+}
+
 .action-buttons {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
 }
 
 .action-btn {
-    flex: 1;
-    padding: 12px;
+    padding: 12px 20px;
     border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-size: 16px;
     cursor: pointer;
+    transition: all 0.3s;
+}
+
+.save-btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.next-btn {
+    background: #2196F3;
+    color: white;
 }
 
 .skip-btn {
-    background: #FF9500;
+    background: #ff9800;
     color: white;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
 }
 
 .status {
