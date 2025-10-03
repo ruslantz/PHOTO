@@ -63,9 +63,15 @@
             </div>
             <!-- КОНЕЦ НОВОЙ СТРУКТУРЫ -->
             
-            <div class="action-buttons">
-                <button onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
-            </div>
+<div class="action-buttons">
+    <button id="saveBtn" onclick="savePhoto()" class="action-btn save-btn">💾 Сохранить фото</button>
+    <button id="nextBtn" onclick="nextPhoto()" class="action-btn next-btn">⏭️ Следующее фото</button>
+    <button id="skipBtn" onclick="skipPhoto()" class="action-btn skip-btn">⏭️ Пропустить фото</button>
+</div>
+
+<div class="photo-counter">
+    Фото: <span id="photoCounter">0 / 0</span>
+</div>
             
             <div id="status" class="status info"></div>
         </div>
