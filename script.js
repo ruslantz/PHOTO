@@ -26,6 +26,7 @@ const children = [
 let currentPhotos = [];
 let currentIndex = 0;
 let selectedChild = '';
+let currentPreviewUrl = null;
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
@@ -70,40 +71,73 @@ function showTaggerSection() {
 }
 
 async function showCurrentPhoto() {
+    // Очищаем предыдущее превью
+    if (currentPreviewUrl) {
+        URL.revokeObjectURL(currentPreviewUrl);
+        currentPreviewUrl = null;
+    }
+    
     if (currentIndex >= currentPhotos.length) {
         showStatus('🎉 Все фото обработаны!', 'success');
+        
+        // Добавляем кнопку для новых фото
+        const newSessionBtn = document.createElement('button');
+        newSessionBtn.textContent = '📸 Новые фото';
+        newSessionBtn.className = 'upload-btn';
+        newSessionBtn.style.marginTop = '10px';
+        newSessionBtn.onclick = function() {
+            resetSession();
+        };
+        
+        const statusDiv = document.getElementById('status');
+        if (!statusDiv.querySelector('.upload-btn')) {
+            statusDiv.appendChild(newSessionBtn);
+        }
         return;
     }
 
     const file = currentPhotos[currentIndex];
     
-    // Проверяем формат файла
-    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-        // Конвертируем HEIC в JPEG для превью
-        try {
+    try {
+        // Проверяем формат файла
+        if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+            // Конвертируем HEIC в JPEG для превью
             showStatus('Конвертируем HEIC...', 'info');
             const jpegBlob = await convertHeicToJpeg(file);
-            const jpegUrl = URL.createObjectURL(jpegBlob);
-            document.getElementById('photoPreview').src = jpegUrl;
-        } catch (error) {
-            showStatus('Ошибка конвертации HEIC', 'error');
-            console.error('HEIC conversion error:', error);
-            return;
+            currentPreviewUrl = URL.createObjectURL(jpegBlob);
+            document.getElementById('photoPreview').src = currentPreviewUrl;
+        } else {
+            // Для обычных форматов
+            const dataUrl = await readFileAsDataURL(file);
+            document.getElementById('photoPreview').src = dataUrl;
         }
-    } else {
-        // Для обычных форматов
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('photoPreview').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        
+        selectedChild = '';
+        document.querySelectorAll('.child-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
+        
+    } catch (error) {
+        console.error('Error showing photo:', error);
+        showStatus('Ошибка загрузки фото', 'error');
+        // Пропускаем проблемное фото
+        setTimeout(() => {
+            currentIndex++;
+            updateProgress();
+            showCurrentPhoto();
+        }, 1000);
     }
-    
-    selectedChild = '';
-    document.querySelectorAll('.child-btn').forEach(btn => {
-        btn.classList.remove('active');
+}
+
+// Функция для чтения файла как DataURL с Promise
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsDataURL(file);
     });
-    showStatus('Выберите ребенка - фото сохранится автоматически', 'info');
 }
 
 // Функция конвертации HEIC в JPEG
@@ -152,20 +186,30 @@ async function savePhoto() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
     
-    showStatus(`✅ Сохранено: ${fileName}`, 'success');
-    
-    // Переходим к следующему фото
-    currentIndex++;
-    updateProgress();
-    setTimeout(showCurrentPhoto, 1000);
+    // Даем время на скачивание перед очисткой
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+        
+        showStatus(`✅ Сохранено: ${fileName}`, 'success');
+        
+        // Переходим к следующему фото с задержкой
+        currentIndex++;
+        updateProgress();
+        setTimeout(showCurrentPhoto, 500);
+    }, 100);
 }
 
 function skipPhoto() {
+    // Очищаем превью
+    if (currentPreviewUrl) {
+        URL.revokeObjectURL(currentPreviewUrl);
+        currentPreviewUrl = null;
+    }
+    
     currentIndex++;
     updateProgress();
-    showCurrentPhoto();
+    setTimeout(showCurrentPhoto, 100);
 }
 
 function updateProgress() {
@@ -177,4 +221,32 @@ function showStatus(message, type = '') {
     const statusDiv = document.getElementById('status');
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
+    
+    // Удаляем старые кнопки если есть
+    const oldBtn = statusDiv.querySelector('button');
+    if (oldBtn && !message.includes('🎉')) {
+        oldBtn.remove();
+    }
+}
+
+function resetSession() {
+    // Очищаем все состояния
+    if (currentPreviewUrl) {
+        URL.revokeObjectURL(currentPreviewUrl);
+        currentPreviewUrl = null;
+    }
+    
+    currentPhotos = [];
+    currentIndex = 0;
+    selectedChild = '';
+    
+    document.getElementById('taggerSection').style.display = 'none';
+    document.querySelector('.upload-section').style.display = 'block';
+    document.getElementById('photoInput').value = '';
+    document.getElementById('photoPreview').src = '';
+    document.querySelectorAll('.child-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    showStatus('Выберите фото для начала работы', 'info');
 }
