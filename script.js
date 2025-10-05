@@ -173,6 +173,7 @@ async function savePhoto() {
     }
 
     const lessonNumber = document.getElementById('lessonNumber').value;
+    const quality = parseFloat(document.getElementById('quality').value); // Получаем качество
     const file = currentPhotos[currentIndex];
     const child = children.find(c => c.id === selectedChild);
     
@@ -186,17 +187,15 @@ async function savePhoto() {
         
         let processedFile;
         
-        // Обрабатываем HEIC
         if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-            processedFile = await convertHeicToJpeg(file);
+            processedFile = await convertHeicToJpeg(file, quality);
         } else {
-            // Сжимаем обычные фото
-            processedFile = await compressImage(file);
+            processedFile = await compressImage(file, quality);
         }
         
         const fileName = `${selectedChild}_lesson${lessonNumber}.jpg`;
         
-        // Скачиваем сжатый файл
+        // Остальной код без изменений...
         const url = URL.createObjectURL(processedFile);
         const a = document.createElement('a');
         a.href = url;
@@ -216,6 +215,17 @@ async function savePhoto() {
         console.error('Save error:', error);
         showStatus('Ошибка сохранения', 'error');
     }
+}
+
+// Обновляем функцию с параметром качества
+async function convertHeicToJpeg(heicFile, quality = 0.7) {
+    const arrayBuffer = await heicFile.arrayBuffer();
+    const convertResult = await heicConvert({
+        buffer: arrayBuffer,
+        format: 'JPEG',
+        quality: quality
+    });
+    return new Blob([convertResult], { type: 'image/jpeg' });
 }
 
 // Функция сжатия изображения
