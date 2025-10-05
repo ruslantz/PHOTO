@@ -225,3 +225,42 @@ h1 {
     text-align: center;
     font-size: 14px;
 }
+
+/* Стили для выбора базы данных */
+.database-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.database-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.db-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.db-btn {
+    padding: 12px 20px;
+    border: 2px solid #007AFF;
+    background: white;
+    color: #007AFF;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.db-btn.active {
+    background: #007AFF;
+    color: white;
+}
+
+.db-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+}
