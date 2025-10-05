@@ -193,7 +193,7 @@ async function savePhoto() {
             processedFile = await compressImage(file, quality);
         }
         
-        const fileName = `${selectedChild}_lesson${lessonNumber}.jpg`;
+        const fileName = `${selectedChild}.jpg`;
         
         // Остальной код без изменений...
         const url = URL.createObjectURL(processedFile);
