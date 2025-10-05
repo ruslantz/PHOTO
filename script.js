@@ -1,29 +1,6 @@
-// База данных детей
-const children = [
-  { id: "AlievaN77", name: "Алиева Николь" },
-  { id: "ZhuravlevaE96", name: "Журавлева Ева" },
-  { id: "IvanushkinM09", name: "Иванушкин Марк" },
-  { id: "KaisinaK55", name: "Кайсина Кира" },
-  { id: "KapitonovM17", name: "Капитонов Михаил" },
-  { id: "OstapchukA15", name: "Остапчук Арсений" },
-  { id: "SalyakinA30", name: "Салякин Алексей" },
-  { id: "ShilinM81", name: "Шилин Максим" },
-  { id: "AnaevB73", name: "Анаев Борис" },
-  { id: "BaranovD88", name: "Баранов Даниил" },
-  { id: "DjahayaS42", name: "Джахая Сандро" },
-  { id: "ZhuravlevaA51", name: "Журавлева Аврора" },
-  { id: "KazaryanA12", name: "Казарян Артемий" },
-  { id: "KuznetsovA68", name: "Кузнецов Арсений" },
-  { id: "PantileykoA24", name: "Пантилейко Артем" },
-  { id: "RutskiyY33", name: "Руцкий Ян" },
-  { id: "StepanenkoM65", name: "Степаненко Мия" },
-  { id: "ChzhouS77", name: "Чжоу Шуянь" },
-  { id: "SavinovaE32", name: "Савинова Елизавета" },
-  { id: "ZicinL25", name: "Цыцин Лука" },
-  { id: "SavinovI64", name: "Савинов Илья" },
-  { id: "DanilinaV17", name: "Данилина Виктория" },
-  { id: "SidorovF63", name: "Сидоров Фёдор" }
-];
+// Базы данных детей
+let currentDatabase = null;
+let children = [];
 
 let currentPhotos = [];
 let currentIndex = 0;
@@ -33,17 +10,15 @@ let currentPreviewUrl = null;
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
-    showStatus('Выберите фото для начала работы', 'info');
+    showStatus('Выберите группу для начала работы', 'info');
 });
 
 function setupEventListeners() {
-    // Выбор ребенка
-    document.querySelectorAll('.child-btn').forEach(btn => {
+    // Выбор базы данных
+    document.querySelectorAll('.db-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            selectedChild = this.getAttribute('data-id');
-            document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            showStatus('Нажмите "Сохранить фото"', 'info');
+            const dbName = this.getAttribute('data-db');
+            selectDatabase(dbName);
         });
     });
 
@@ -52,7 +27,57 @@ function setupEventListeners() {
     fileInput.addEventListener('change', handleFileSelect);
 }
 
+function selectDatabase(dbName) {
+    currentDatabase = dbName;
+    children = databases[dbName];
+    
+    // Обновляем активную кнопку базы данных
+    document.querySelectorAll('.db-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.db-btn[data-db="${dbName}"]`).classList.add('active');
+    
+    // Обновляем кнопки детей
+    updateChildButtons();
+    
+    // Показываем секцию загрузки фото
+    document.querySelector('.upload-section').style.display = 'block';
+    document.getElementById('taggerSection').style.display = 'none';
+    
+    showStatus(`Выбрана группа: ${getDatabaseDisplayName(dbName)}. Теперь выберите фото`, 'success');
+}
+
+function getDatabaseDisplayName(dbName) {
+    const names = {
+        'engineers': 'Инженеры',
+        'karate': 'Карате'
+    };
+    return names[dbName] || dbName;
+}
+
+function updateChildButtons() {
+    const container = document.getElementById('childButtons');
+    container.innerHTML = '';
+    
+    children.forEach(child => {
+        const btn = document.createElement('button');
+        btn.className = 'child-btn';
+        btn.setAttribute('data-id', child.id);
+        btn.textContent = child.name.split(' ')[1]; // Показываем только имя
+        btn.addEventListener('click', function() {
+            selectedChild = this.getAttribute('data-id');
+            document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            showStatus('Нажмите "Сохранить фото"', 'info');
+        });
+        container.appendChild(btn);
+    });
+}
+
 function handleFileSelect(event) {
+    if (!currentDatabase) {
+        showStatus('Сначала выберите группу', 'error');
+        return;
+    }
+    
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
@@ -64,7 +89,6 @@ function handleFileSelect(event) {
 
 function showTaggerSection() {
     document.getElementById('taggerSection').style.display = 'block';
-    document.querySelector('.upload-section').style.display = 'none';
     updateProgress();
     updatePhotoCounter();
 }
