@@ -14,7 +14,10 @@ const databases = {
         { id: "TurkinK27", name: "Туркин Кирилл" },
         { id: "SharipovI19", name: "Шарипов Илья" },
         { id: "BalalaikinaM84", name: "Балалайкина Милана" },
-        { id: "ErshovaI78", name: "Ершова Юлиана" }
+        { id: "ErshovaI78", name: "Ершова Юлиана" },
+        { id: "PreobrajenskiiK25", name: "Преображенский Константин" },
+        { id: "VorobievV45", name: "Воробьев Владислав" },
+        { id: "VoinovM33", name: "Войнов Михаил" }
     ],
 
     engineers: [
