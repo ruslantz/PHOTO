@@ -41,7 +41,7 @@ const databases = {
         { id: "ChzhouS77", name: "Чжоу Шуянь" },
         { id: "SavinaE32", name: "Савина Елизавета" },
         { id: "ZicinL25", name: "Цыцын Лука" },
-        { id: "SoloviovI64", name: "Соловьев Илья" },
+        { id: "Savenkov64", name: "Соловьев Илья" },
         { id: "DanilukV17", name: "Данилюк Виктория" },
         { id: "SidorovF63", name: "Сидоров Фёдор" }
     ]
