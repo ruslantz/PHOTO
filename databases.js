@@ -7,6 +7,8 @@ const databases = {
         { id: "VlaskinP51", name: "Власкин Пётр" },
         { id: "RudkoN86", name: "Рудько Назар" },
         { id: "GlushankovM39", name: "Глушанков Матвей" },
+        { id: "KorpilevM40", name: "Корпылев Мирослав" },
+        { id: "FilimonovaY85", name: "Филимонова Яна" },
         { id: "SharipovA57", name: "Шарипов Артем" },
         { id: "VyblyiL62", name: "Выблый Лев" },
         { id: "MagomedovA91", name: "Магомедов Али" },
