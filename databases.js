@@ -7,6 +7,8 @@ const databases = {
         { id: "VlaskinP51", name: "Власкин Пётр" },
         { id: "RudkoN86", name: "Рудько Назар" },
         { id: "GlushankovM39", name: "Глушанков Матвей" },
+        { id: "KorpilevM40", name: "Корпылев Мирослав" },
+        { id: "FilimonovaY85", name: "Филимонова Яна" },
         { id: "SharipovA57", name: "Шарипов Артем" },
         { id: "VyblyiL62", name: "Выблый Лев" },
         { id: "MagomedovA91", name: "Магомедов Али" },
@@ -27,6 +29,7 @@ const databases = {
     { id: "DanilukV17", name: "Данилюк Виктория" },
     { id: "ImamovD64", name: "Имамов Динар" },
     { id: "BadalyanA83", name: "Бадалян Аврора" },
+    { id: "DobrenkovI70", name: "Добренков Ивар" },
     { id: "ShcherbakovM41", name: "Щербаков Матвей" },
     { id: "MazzhukhinM76", name: "Мазжухин Матвей" },
     { id: "GalstyanL29", name: "Галстян Лев" },
@@ -39,8 +42,8 @@ const databases = {
     { id: "ShilinM81", name: "Шилин Максим" },
     { id: "BaranovD88", name: "Баранов Даниил" },
     { id: "ChzhouS77", name: "Чжоу Шуянь" },
+    { id: "Zhuii23", name: "У Жуйи" },
     { id: "SidorovF63", name: "Сидоров Фёдор" },
-    { id: "AnnaevB73", name: "Аннаев Борис" },
     { id: "RutskiyY33", name: "Руцкий Ян" },
     { id: "DjahayaS42", name: "Джахая Сандро" },
     { id: "StepanenkoM65", name: "Степаненко Мия" },
@@ -49,6 +52,5 @@ const databases = {
     { id: "KuznetsovA68", name: "Кузнецов Арсений" },
     { id: "PanteleykoA24", name: "Пантелейко Артем" },
     { id: "SavinaE32", name: "Савина Елизавета" },
-    { id: "IvanovI19", name: "Иванов Иван" }
 ]
 };
