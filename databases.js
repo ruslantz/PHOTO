@@ -19,6 +19,7 @@ const databases = {
         { id: "ErshovaI78", name: "Ершова Юлиана" },
         { id: "PreobrajenskiiK25", name: "Преображенский Константин" },
         { id: "VorobievV45", name: "Воробьев Владислав" },
+        { id: "FetisovM91", name: "Фетисов Мирон" },
         { id: "VoinovM33", name: "Войнов Михаил" }
     ],
 

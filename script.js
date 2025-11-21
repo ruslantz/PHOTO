@@ -166,13 +166,14 @@ async function convertHeicToJpeg(heicFile) {
     return new Blob([convertResult], { type: 'image/jpeg' });
 }
 
-function savePhoto() {
+async function savePhoto() {
     if (!selectedChild) {
         showStatus('Сначала выберите ребенка', 'error');
         return;
     }
 
     const lessonNumber = document.getElementById('lessonNumber').value;
+    const quality = parseFloat(document.getElementById('quality').value); // Получаем качество
     const file = currentPhotos[currentIndex];
     const child = children.find(c => c.id === selectedChild);
     
@@ -181,26 +182,21 @@ function savePhoto() {
         return;
     }
 
-    // Создаем имя файла
-    let extension = file.name.split('.').pop();
-    let fileToSave = file;
-    
-    // Если HEIC, конвертируем в JPEG при сохранении
-    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-        try {
-            fileToSave = convertHeicToJpeg(file);
-            extension = 'jpg';
-        } catch (error) {
-            showStatus('Ошибка конвертации HEIC', 'error');
-            return;
-        }
-    }
-    
-    const fileName = `${selectedChild}.${extension}`;
-    
     try {
-        // Скачиваем файл
-        const url = URL.createObjectURL(fileToSave);
+        showStatus('Сжимаем фото...', 'info');
+        
+        let processedFile;
+        
+        if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+            processedFile = await convertHeicToJpeg(file, quality);
+        } else {
+            processedFile = await compressImage(file, quality);
+        }
+        
+        const fileName = `${selectedChild}.jpg`;
+        
+        // Остальной код без изменений...
+        const url = URL.createObjectURL(processedFile);
         const a = document.createElement('a');
         a.href = url;
         a.download = fileName;
@@ -210,13 +206,79 @@ function savePhoto() {
         
         setTimeout(() => {
             URL.revokeObjectURL(url);
-            showStatus(`✅ Сохранено: ${fileName}`, 'success');
+            const originalSize = (file.size / 1024 / 1024).toFixed(2);
+            const compressedSize = (processedFile.size / 1024 / 1024).toFixed(2);
+            showStatus(`✅ Сохранено: ${fileName} (${originalSize}Мб → ${compressedSize}Мб)`, 'success');
         }, 100);
         
     } catch (error) {
         console.error('Save error:', error);
         showStatus('Ошибка сохранения', 'error');
     }
+}
+
+// Обновляем функцию с параметром качества
+async function convertHeicToJpeg(heicFile, quality = 0.7) {
+    const arrayBuffer = await heicFile.arrayBuffer();
+    const convertResult = await heicConvert({
+        buffer: arrayBuffer,
+        format: 'JPEG',
+        quality: quality
+    });
+    return new Blob([convertResult], { type: 'image/jpeg' });
+}
+
+// Функция сжатия изображения
+async function compressImage(file, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Вычисляем новые размеры (макс. 1200px по большей стороне)
+                let width = img.width;
+                let height = img.height;
+                const maxSize = 1200;
+                
+                if (width > height && width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                } else if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Рисуем сжатое изображение
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Конвертируем в JPEG с качеством 70%
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, 'image/jpeg', quality);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Обновляем функцию конвертации HEIC
+async function convertHeicToJpeg(heicFile) {
+    const arrayBuffer = await heicFile.arrayBuffer();
+    const convertResult = await heicConvert({
+        buffer: arrayBuffer,
+        format: 'JPEG',
+        quality: 0.7 // Добавляем качество для HEIC тоже
+    });
+    return new Blob([convertResult], { type: 'image/jpeg' });
 }
 
 function nextPhoto() {
