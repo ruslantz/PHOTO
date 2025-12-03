@@ -64,6 +64,7 @@ h1 {
 
 .photo-column {
     flex: 0 0 50%;
+    display: flex;
 }
 
 .children-column {
@@ -91,7 +92,7 @@ h1 {
 }
 
 .photo-preview {
-    width: 100%;
+    width: 50%;
     max-height: 200px;
     border-radius: 12px;
     object-fit: contain;
@@ -191,7 +192,7 @@ h1 {
 /* Дети - маленькие кнопки в несколько столбцов */
 .child-buttons {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
 }
 
