@@ -10,6 +10,7 @@ const databases = {
         { id: "KorpilevM40", name: "Корпылев Мирослав" },
         { id: "FilimonovaY85", name: "Филимонова Яна" },
         { id: "SharipovA57", name: "Шарипов Артем" },
+        { id: "ShabalkinR138", name: "Шарипов Артем" },
         { id: "VyblyiL62", name: "Выблый Лев" },
         { id: "MagomedovA91", name: "Магомедов Али" },
         { id: "TurkinN35", name: "Туркин Николай" },
